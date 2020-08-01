@@ -24,8 +24,6 @@ steps:
       - 'managed'
       - '--update-env-vars'
       - 'BUCKET=$_BUCKET,UPLOAD_CHUNK_IN_MB=$_UPLOAD_CHUNK_IN_MB'
-      - '--service-account'
-      - '$_SERVICE_ACCOUNT_EMAIL'
 
 images:
   - 'gcr.io/$PROJECT_ID/$_SERVICE_NAME:$COMMIT_SHA'
