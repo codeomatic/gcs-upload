@@ -1,0 +1,4 @@
+Flask==1.1.2
+google-cloud-storage==1.30.0
+smart_open[gcp]==2.1.0
+

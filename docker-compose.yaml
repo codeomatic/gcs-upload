@@ -1,0 +1,18 @@
+version: "3.7"
+
+services:
+
+  gcs-upload:
+    container_name: gcs-upload
+    build: ./
+    image: gcs-upload:latest
+    #read_only: true
+    environment:
+      - PORT=${PORT}
+      - BUCKET=${BUCKET}
+      - GOOGLE_APPLICATION_CREDENTIALS=/service_account.json
+      - UPLOAD_CHUNK_IN_MB=2
+    volumes:
+      - ./auth/service_account.json:/service_account.json:ro
+    ports:
+      - "8081:${PORT}"
