@@ -14,6 +14,12 @@ client = storage.Client()
 app = Flask(__name__)
 
 
+def time_check(start, finish):
+    m, s = divmod(finish - start, 60)
+    h, m = divmod(m, 60)
+    return f'{int(h)}h:{int(m)}m:{round(s, 2)}s'
+
+
 def upload(url, gcs_path):
     logging.info(f'Uploading to {gcs_path}')
     chunk = float(os.getenv('UPLOAD_CHUNK_IN_MB', '0.5'))
@@ -21,11 +27,16 @@ def upload(url, gcs_path):
     start = time()
     with requests.get(url, stream=True) as source:
         with open(gcs_path, 'wb', transport_params=dict(client=client)) as dest:
+            logging.info(f'Read and write were ready in {time_check(start, time())}')
+            chunk_read_time = time()
             for chunk in source.iter_content(chunk_size=chunk):
+                logging.info(f'chunk read time {time_check(chunk_read_time, time())}')
+                chunk_write = time()
                 dest.write(chunk)
-    m, s = divmod(time() - start, 60)
-    h, m = divmod(m, 60)
-    logging.info(f'Upload finished {int(h)}h:{int(m)}m:{round(s, 2)}s')
+                logging.info(f'chunk write time {time_check(chunk_write, time())}')
+                chunk_read_time = time()
+
+    logging.info(f'Upload finished in {time_check(start, time())}')
 
 
 def file_exists(bucket_name, filename):
