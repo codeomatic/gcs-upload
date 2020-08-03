@@ -12,8 +12,7 @@ def call(arg: str) -> Popen:
 
 
 def main():
-    current = Path(__file__).parent.absolute()
-    base = current.parent
+    base = Path(__file__).parent.absolute()
     spec = importlib.util.spec_from_file_location("app", Path(base, 'app/main.py'))
     app = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(app)
