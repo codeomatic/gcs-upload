@@ -1,14 +1,13 @@
 from flask import Flask, request, jsonify
 from collections import OrderedDict
 from smart_open import open
-from multiprocessing import Process
 from google.cloud import storage
 from time import time
 import os
 import requests
 import logging
-from subprocess import check_output
-from shlex import quote
+
+__version__ = 'v20.08.7'
 
 logging.basicConfig(level=logging.INFO)
 client = storage.Client()
@@ -22,7 +21,7 @@ def time_check(start, finish):
     return f'{int(h)}h:{int(m)}m:{round(s, 2)}s'
 
 
-def upload_py(url, gcs_path):
+def upload(url, gcs_path):
     logging.info(f'Uploading to {gcs_path}')
     chunk = float(os.getenv('UPLOAD_CHUNK_IN_MB', '0.5'))
     chunk = int(chunk * 1024 * 1024)
@@ -38,12 +37,6 @@ def upload_py(url, gcs_path):
                 logging.info(f'chunk write time {time_check(chunk_write, time())}')
                 chunk_read_time = time()
 
-    logging.info(f'Upload finished in {time_check(start, time())}')
-
-
-def upload(url, gcs_path):
-    start = time()
-    check_output(f'curl -L {quote(url)} | gsutil cp - {quote(gcs_path)}', shell=True)
     logging.info(f'Upload finished in {time_check(start, time())}')
 
 
@@ -86,17 +79,16 @@ def start_upload():
         source.close()
 
     gcs_path = f'gs://{bucket_name}/{filename}'
-
-    Process(target=upload, args=(url, gcs_path)).start()
+    upload(url, gcs_path)
 
     response['status'] = 'ok'
-    response['result'] = f'Upload from {url} to {gcs_path} was started.'
+    response['result'] = f'{url} was uploaded to {filename}.'
     return jsonify(response)
 
 
 @app.route('/', methods=['GET'])
 def health_check():
-    return 'Service is running', 200
+    return f'URL to GCS service version {__version__}', 200
 
 
 if __name__ == "__main__":
