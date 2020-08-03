@@ -7,6 +7,8 @@ from time import time
 import os
 import requests
 import logging
+from subprocess import check_output
+from shlex import quote
 
 logging.basicConfig(level=logging.INFO)
 client = storage.Client()
@@ -20,7 +22,7 @@ def time_check(start, finish):
     return f'{int(h)}h:{int(m)}m:{round(s, 2)}s'
 
 
-def upload(url, gcs_path):
+def upload_py(url, gcs_path):
     logging.info(f'Uploading to {gcs_path}')
     chunk = float(os.getenv('UPLOAD_CHUNK_IN_MB', '0.5'))
     chunk = int(chunk * 1024 * 1024)
@@ -36,6 +38,12 @@ def upload(url, gcs_path):
                 logging.info(f'chunk write time {time_check(chunk_write, time())}')
                 chunk_read_time = time()
 
+    logging.info(f'Upload finished in {time_check(start, time())}')
+
+
+def upload(url, gcs_path):
+    start = time()
+    check_output(f'curl -L {quote(url)} | gsutil cp - {quote(gcs_path)}', shell=True)
     logging.info(f'Upload finished in {time_check(start, time())}')
 
 
