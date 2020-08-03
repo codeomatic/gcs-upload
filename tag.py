@@ -26,7 +26,7 @@ def main():
 
     push = call(f'git push --tags')
     try:
-        returncode = push.wait(timeout=5)
+        returncode = push.wait(timeout=20)
     except TimeoutExpired:
         push.kill()
         returncode = 1
