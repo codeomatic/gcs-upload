@@ -13,16 +13,16 @@ def call(arg: str) -> Popen:
 
 def main():
     base = Path(__file__).parent.absolute()
-    spec = importlib.util.spec_from_file_location("app", Path(base, 'app/main.py'))
+    spec = importlib.util.spec_from_file_location("app", Path(base, 'app/settings.py'))
     app = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(app)
 
-    add = call(f'git tag {app.__version__}')
+    add = call(f'git tag {app.version}')
 
     if add.wait():
-        print(f'Failed to add tag {app.__version__}')
+        print(f'Failed to add tag {app.version}')
         return
-    print(f'Tag {app.__version__} was added')
+    print(f'Tag {app.version} was added')
 
     push = call(f'git push --tags')
     try:
@@ -35,9 +35,9 @@ def main():
         print('success')
         return
 
-    print(f'Pushing tag {app.__version__} failed')
+    print(f'Pushing tag {app.version} failed')
 
-    remove = call(f'git tag --delete {app.__version__}')
+    remove = call(f'git tag --delete {app.version}')
     remove.wait()
 
 

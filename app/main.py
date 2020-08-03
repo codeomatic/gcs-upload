@@ -7,7 +7,10 @@ import os
 import requests
 import logging
 
-__version__ = 'v20.08.7'
+try:
+    import settings
+except ImportError:
+    from . import settings
 
 logging.basicConfig(level=logging.INFO)
 client = storage.Client()
@@ -88,7 +91,7 @@ def start_upload():
 
 @app.route('/', methods=['GET'])
 def health_check():
-    return f'URL to GCS service version {__version__}', 200
+    return f'URL to GCS service version {settings.version}', 200
 
 
 if __name__ == "__main__":
