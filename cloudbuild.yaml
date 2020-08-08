@@ -13,6 +13,7 @@ steps:
   # _CREDENTIALS_PATH, _CREDENTIALS_NAME
   - name: 'gcr.io/cloud-builders/gcloud'
     args:
+      - 'beta'
       - 'run'
       - 'deploy'
       - '$_SERVICE_NAME'
