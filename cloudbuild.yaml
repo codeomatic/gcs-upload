@@ -10,6 +10,7 @@ steps:
   # Deploy container image to Cloud Run
   # Deployment hook must define:
   # _SERVICE_NAME, _REGION, _BUCKET, _UPLOAD_CHUNK_IN_MB, _SERVICE_ACCOUNT_EMAIL
+  # _CREDENTIALS_PATH, _CREDENTIALS_NAME
   - name: 'gcr.io/cloud-builders/gcloud'
     args:
       - 'run'
@@ -23,9 +24,11 @@ steps:
       - '--platform'
       - 'managed'
       - '--update-env-vars'
-      - 'BUCKET=$_BUCKET,UPLOAD_CHUNK_IN_MB=$_UPLOAD_CHUNK_IN_MB'
+      - 'BUCKET=$_BUCKET,UPLOAD_CHUNK_IN_MB=$_UPLOAD_CHUNK_IN_MB,GOOGLE_APPLICATION_CREDENTIALS=$_CREDENTIALS_PATH'
       - '--service-account'
       - '$_SERVICE_ACCOUNT_EMAIL'
+      - '--update-secrets'
+      - '$_CREDENTIALS_PATH=$_CREDENTIALS_NAME'
 
 images:
   - 'gcr.io/$PROJECT_ID/$_SERVICE_NAME:$COMMIT_SHA'

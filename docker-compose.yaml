@@ -3,16 +3,16 @@ version: "3.7"
 services:
 
   gcs-upload:
-    container_name: gcs-upload
+    container_name: ${_SERVICE_NAME}
     build: ./
-    image: gcs-upload:latest
+    image: ${_SERVICE_NAME}:latest
     #read_only: true
     environment:
-      - PORT=${PORT}
-      - BUCKET=${BUCKET}
-      - GOOGLE_APPLICATION_CREDENTIALS=/service_account.json
-      - UPLOAD_CHUNK_IN_MB=2
+      - PORT=${_PORT}
+      - BUCKET=${_BUCKET}
+      - GOOGLE_APPLICATION_CREDENTIALS=${_CREDENTIALS_PATH}
+      - UPLOAD_CHUNK_IN_MB=${_UPLOAD_CHUNK_IN_MB}
     volumes:
-      - ./auth/service_account.json:/service_account.json:ro
+      - ${_CREDENTIALS_NAME}:${_CREDENTIALS_PATH}:ro
     ports:
-      - "8081:${PORT}"
+      - "${_PORT}:${_PORT}"
